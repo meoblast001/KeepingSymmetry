@@ -18,7 +18,9 @@ public class PlayerMovementController : MonoBehaviour {
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
   public void OnMove(InputValue value) {
-    Debug.Log("Move " + value.Get<Vector2>());
+    var inputVec = value.Get<Vector2>();
+    var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
+    Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
   }
 
   public void OnToggleActive(InputValue value) {
