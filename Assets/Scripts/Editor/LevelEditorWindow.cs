@@ -25,11 +25,17 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   public struct GridSize {
-    public int width;
-    public int height;
+    public int Width { get; set; }
+    public int Height { get; set; }
   }
 
-  private GridSize gridSize;
+  public enum SymmetryAxis {
+    AxisX,
+    AxisY
+  }
+
+  private GridSize gridSize = new GridSize() { Width = 10, Height = 10 };
+  private SymmetryAxis symmetryAxis = SymmetryAxis.AxisX;
   private PaletteItem currentPaletteItem;
 
   [MenuItem("Window/Level Editor")]
@@ -42,9 +48,19 @@ public class LevelEditorWindow : EditorWindow {
 
     EditorGUILayout.BeginHorizontal();
     EditorGUILayout.LabelField("Level Dimensions");
-    gridSize.width = EditorGUILayout.IntField(gridSize.width);
-    gridSize.height = EditorGUILayout.IntField(gridSize.height);
+    gridSize.Width = EditorGUILayout.IntField(gridSize.Width);
+    gridSize.Height = EditorGUILayout.IntField(gridSize.Height);
     EditorGUILayout.EndHorizontal();
+
+    EditorGUILayout.BeginHorizontal(new [] { GUILayout.MaxWidth(300) });
+    EditorGUILayout.LabelField("Axis of Symmetry");
+    if (GUILayout.Toggle(this.symmetryAxis == SymmetryAxis.AxisX, "X Axis"))
+      this.symmetryAxis = SymmetryAxis.AxisX;
+    if (GUILayout.Toggle(this.symmetryAxis == SymmetryAxis.AxisY, "Y Axis"))
+      this.symmetryAxis = SymmetryAxis.AxisY;
+    EditorGUILayout.EndHorizontal();
+
+    GUILayout.Space(50);
 
     EditorGUILayout.BeginHorizontal();
     this.DrawPalette();
@@ -53,10 +69,9 @@ public class LevelEditorWindow : EditorWindow {
     EditorGUILayout.EndVertical();
   }
 
-  private void DrawGrid() {}
-
   private void DrawPalette() {
-    EditorGUILayout.BeginVertical(new [] { GUILayout.Width(100) });
+    EditorGUILayout.BeginVertical();
+    EditorGUILayout.LabelField("Palette");
     this.DrawPaletteItem(PaletteItem.Wall4Edge0);
     this.DrawPaletteItem(PaletteItem.Wall1Edge0);
     this.DrawPaletteItem(PaletteItem.Wall1Edge1);
@@ -81,6 +96,11 @@ public class LevelEditorWindow : EditorWindow {
 
   private void DrawPaletteItem(PaletteItem item) {
     Texture tex = (Texture) EditorGUIUtility.Load($"Assets/Textures/Editor/{item.ToString()}.png");
-    GUILayout.Button(tex);
+    if (GUILayout.Button(tex, new [] { GUILayout.Width(100) }))
+      this.currentPaletteItem = item;
+  }
+
+  private void DrawGrid() {
+    // TODO
   }
 }
