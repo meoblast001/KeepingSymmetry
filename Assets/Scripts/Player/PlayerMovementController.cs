@@ -57,4 +57,65 @@ public class PlayerMovementController : MonoBehaviour {
         return CameraDirection.ZForward;
     }
   }
+
+  private static MovementDirection DirectionFromInput(Vector2 inputVec) {
+    if (inputVec.x > 0f)
+      return MovementDirection.Right;
+    else if (inputVec.x < 0f)
+      return MovementDirection.Left;
+    else if (inputVec.y > 0f)
+      return MovementDirection.Forward;
+    else if (inputVec.y < 0f)
+      return MovementDirection.Backward;
+    else
+      return MovementDirection.None;
+  }
+
+  private MovementDirection CameraRelativeMovement(MovementDirection direction) {
+    switch (this.cameraDirection) {
+      case CameraDirection.ZForward:
+        return direction;
+      case CameraDirection.ZBackward:
+        switch (direction) {
+          case MovementDirection.Left:
+            return MovementDirection.Right;
+          case MovementDirection.Forward:
+            return MovementDirection.Backward;
+          case MovementDirection.Right:
+            return MovementDirection.Left;
+          case MovementDirection.Backward:
+            return MovementDirection.Forward;
+        }
+        break;
+      case CameraDirection.XForward:
+        switch (direction) {
+          case MovementDirection.Left:
+            return MovementDirection.Forward;
+          case MovementDirection.Forward:
+            return MovementDirection.Right;
+          case MovementDirection.Right:
+            return MovementDirection.Backward;
+          case MovementDirection.Backward:
+            return MovementDirection.Left;
+        }
+        break;
+      case CameraDirection.XBackward:
+        switch (direction) {
+          case MovementDirection.Left:
+            return MovementDirection.Backward;
+          case MovementDirection.Forward:
+            return MovementDirection.Left;
+          case MovementDirection.Right:
+            return MovementDirection.Forward;
+          case MovementDirection.Backward:
+            return MovementDirection.Right;
+        }
+        break;
+      default:
+        Debug.LogError("Invalid camera direction: " + direction);
+        return MovementDirection.None;
+    }
+    Debug.Log("Invalid movement direciton: " + direction);
+    return MovementDirection.None;
+  }
 }
