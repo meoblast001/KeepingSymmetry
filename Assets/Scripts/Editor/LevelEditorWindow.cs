@@ -68,6 +68,14 @@ public class LevelEditorWindow : EditorWindow {
     this.DrawPaletteItem(PaletteItem.Wall2Edge3);
     this.DrawPaletteItem(PaletteItem.Wall2Edge4);
     this.DrawPaletteItem(PaletteItem.Wall2Edge5);
+    this.DrawPaletteItem(PaletteItem.Wall3Edge0);
+    this.DrawPaletteItem(PaletteItem.Wall3Edge1);
+    this.DrawPaletteItem(PaletteItem.Wall3Edge2);
+    this.DrawPaletteItem(PaletteItem.Wall3Edge3);
+    this.DrawPaletteItem(PaletteItem.Wall4Edge0);
+    this.DrawPaletteItem(PaletteItem.Player0);
+    this.DrawPaletteItem(PaletteItem.Player1);
+    this.DrawPaletteItem(PaletteItem.Goal);
     EditorGUILayout.EndVertical();
   }
 
