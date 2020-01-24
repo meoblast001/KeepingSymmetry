@@ -34,6 +34,7 @@ public class LevelEditorWindow : EditorWindow {
     AxisY
   }
 
+  private Vector2 scrollPosition = Vector2.zero;
   private GridSize gridSize = new GridSize() { Width = 10, Height = 10 };
   private SymmetryAxis symmetryAxis = SymmetryAxis.AxisX;
   private PaletteItem currentPaletteItem;
@@ -44,7 +45,12 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   void OnGUI() {
+    this.scrollPosition = EditorGUILayout.BeginScrollView(this.scrollPosition);
     EditorGUILayout.BeginVertical();
+
+    this.DrawActions();
+
+    GUILayout.Space(50);
 
     EditorGUILayout.BeginHorizontal();
     EditorGUILayout.LabelField("Level Dimensions");
@@ -67,6 +73,14 @@ public class LevelEditorWindow : EditorWindow {
     EditorGUILayout.EndHorizontal();
 
     EditorGUILayout.EndVertical();
+    EditorGUILayout.EndScrollView();
+  }
+
+  private void DrawActions() {
+    EditorGUILayout.BeginHorizontal();
+    GUILayout.Button("Save Level");
+    GUILayout.Button("Load Level");
+    EditorGUILayout.EndHorizontal();
   }
 
   private void DrawPalette() {
