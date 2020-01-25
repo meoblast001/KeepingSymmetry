@@ -2,6 +2,11 @@
 using UnityEngine;
 
 public class LevelEditorWindow : EditorWindow {
+  const int StartWidth = 10;
+  const int StartHeight= 10;
+  const int SectionSpace = 50;
+  const int SymmetryLineSpace = 15;
+
   public enum PaletteItem {
     Wall0Edge0,
     Wall1Edge0, // Edge on left
@@ -35,9 +40,10 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   private Vector2 scrollPosition = Vector2.zero;
-  private GridSize gridSize = new GridSize() { Width = 10, Height = 10 };
+  private GridSize gridSize = new GridSize() { Width = StartWidth, Height = StartHeight };
   private SymmetryAxis symmetryAxis = SymmetryAxis.AxisX;
-  private PaletteItem currentPaletteItem;
+  private PaletteItem? currentPaletteItem;
+  private LevelEditorGrid<PaletteItem> levelGrid = new LevelEditorGrid<PaletteItem>(StartWidth, StartHeight);
 
   [MenuItem("Window/Level Editor")]
   public static void ShowWindow() {
@@ -50,12 +56,13 @@ public class LevelEditorWindow : EditorWindow {
 
     this.DrawActions();
 
-    GUILayout.Space(50);
+    GUILayout.Space(SectionSpace);
 
     EditorGUILayout.BeginHorizontal();
     EditorGUILayout.LabelField("Level Dimensions");
     gridSize.Width = EditorGUILayout.IntField(gridSize.Width);
     gridSize.Height = EditorGUILayout.IntField(gridSize.Height);
+    this.levelGrid.Reallocate(this.gridSize.Width, this.gridSize.Height);
     EditorGUILayout.EndHorizontal();
 
     EditorGUILayout.BeginHorizontal(new [] { GUILayout.MaxWidth(300) });
@@ -66,10 +73,11 @@ public class LevelEditorWindow : EditorWindow {
       this.symmetryAxis = SymmetryAxis.AxisY;
     EditorGUILayout.EndHorizontal();
 
-    GUILayout.Space(50);
+    GUILayout.Space(SectionSpace);
 
     EditorGUILayout.BeginHorizontal();
     this.DrawPalette();
+    this.DrawGrid();
     EditorGUILayout.EndHorizontal();
 
     EditorGUILayout.EndVertical();
@@ -86,7 +94,8 @@ public class LevelEditorWindow : EditorWindow {
   private void DrawPalette() {
     EditorGUILayout.BeginVertical();
     EditorGUILayout.LabelField("Palette");
-    this.DrawPaletteItem(PaletteItem.Wall4Edge0);
+    this.DrawPaletteItem(null);
+    this.DrawPaletteItem(PaletteItem.Wall0Edge0);
     this.DrawPaletteItem(PaletteItem.Wall1Edge0);
     this.DrawPaletteItem(PaletteItem.Wall1Edge1);
     this.DrawPaletteItem(PaletteItem.Wall1Edge2);
@@ -108,13 +117,48 @@ public class LevelEditorWindow : EditorWindow {
     EditorGUILayout.EndVertical();
   }
 
-  private void DrawPaletteItem(PaletteItem item) {
-    Texture tex = (Texture) EditorGUIUtility.Load($"Assets/Textures/Editor/{item.ToString()}.png");
-    if (GUILayout.Button(tex, new [] { GUILayout.Width(100) }))
-      this.currentPaletteItem = item;
+  private void DrawPaletteItem(PaletteItem? item) {
+    if (item.HasValue) {
+      if (GUILayout.Button(PaletteItemTexture(item.Value), new [] { GUILayout.Width(100) }))
+        this.currentPaletteItem = item.Value;
+    } else {
+      if (GUILayout.Button(string.Empty, new [] { GUILayout.Width(100) }))
+        this.currentPaletteItem = null;
+    }
   }
 
   private void DrawGrid() {
-    // TODO
+    EditorGUILayout.BeginVertical();
+    for (int y = 0; y < this.gridSize.Height; ++y) {
+      if (this.symmetryAxis == SymmetryAxis.AxisY && this.gridSize.Height / 2 == y)
+        GUILayout.Space(SymmetryLineSpace);
+
+      EditorGUILayout.BeginHorizontal();
+      for (int x = 0; x < this.gridSize.Width; ++x) {
+        if (this.symmetryAxis == SymmetryAxis.AxisX && this.gridSize.Width / 2 == x)
+          GUILayout.Space(SymmetryLineSpace);
+
+        this.DrawGridButton(x, y);
+      }
+      EditorGUILayout.EndHorizontal();
+    }
+    EditorGUILayout.EndVertical();
+  }
+
+  private void DrawGridButton(int x, int y) {
+    var item = this.levelGrid.GetItem(x, y);
+    bool clicked = false;
+    var options = new [] { GUILayout.Width(30), GUILayout.Height(30) };
+    if (item.HasValue) {
+      clicked = GUILayout.Button(PaletteItemTexture(item.Value), options);
+    } else {
+      clicked = GUILayout.Button(string.Empty, options);
+    }
+    if (clicked)
+      this.levelGrid.SetItem(x, y, this.currentPaletteItem);
+  }
+
+  private static Texture PaletteItemTexture(PaletteItem item) {
+    return (Texture) EditorGUIUtility.Load($"Assets/Textures/Editor/{item.ToString()}.png");
   }
 }
