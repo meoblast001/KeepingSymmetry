@@ -33,6 +33,10 @@ public class LevelEditorGrid<Item>
     return (x < this.size.Item1 && y < this.size.Item2) ? this.grid[y][x] : null;
   }
 
+  public ICollection<Item?> ToFlatGrid() {
+    return grid.SelectMany(row => row).ToList();
+  }
+
   private static Item? TryGetInGrid(List<List<Item?>> grid, int x, int y) {
     return (grid != null && y < grid.Count && x < grid[y].Count) ? grid[y][x] : null;
   }

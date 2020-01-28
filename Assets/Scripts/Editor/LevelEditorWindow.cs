@@ -1,4 +1,7 @@
-﻿using UnityEditor;
+﻿using System.IO;
+using System.Linq;
+using System.Xml.Serialization;
+using UnityEditor;
 using UnityEngine;
 
 public class LevelEditorWindow : EditorWindow {
@@ -6,28 +9,6 @@ public class LevelEditorWindow : EditorWindow {
   const int StartHeight= 10;
   const int SectionSpace = 50;
   const int SymmetryLineSpace = 15;
-
-  public enum PaletteItem {
-    Wall0Edge0,
-    Wall1Edge0, // Edge on left
-    Wall1Edge1, // Edge on top
-    Wall1Edge2, // Edge on right
-    Wall1Edge3, // Edge on bottom
-    Wall2Edge0, // Edges on bottom and right
-    Wall2Edge1, // Edges on bottom and left
-    Wall2Edge2, // Edges on top and left
-    Wall2Edge3, // Edges on top and right
-    Wall2Edge4, // Edges on top and bottom
-    Wall2Edge5, // Edges on left and right
-    Wall3Edge0, // Opening on left
-    Wall3Edge1, // Opening on top
-    Wall3Edge2, // Opening on right
-    Wall3Edge3, // Opening on bottom
-    Wall4Edge0,
-    Player0,
-    Player1,
-    Goal
-  }
 
   public struct GridSize {
     public int Width { get; set; }
@@ -42,8 +23,9 @@ public class LevelEditorWindow : EditorWindow {
   private Vector2 scrollPosition = Vector2.zero;
   private GridSize gridSize = new GridSize() { Width = StartWidth, Height = StartHeight };
   private SymmetryAxis symmetryAxis = SymmetryAxis.AxisX;
-  private PaletteItem? currentPaletteItem;
-  private LevelEditorGrid<PaletteItem> levelGrid = new LevelEditorGrid<PaletteItem>(StartWidth, StartHeight);
+  private LevelModels.GridItemType? currentPaletteItem;
+  private LevelEditorGrid<LevelModels.GridItemType> levelGrid
+    = new LevelEditorGrid<LevelModels.GridItemType>(StartWidth, StartHeight);
 
   [MenuItem("Window/Level Editor")]
   public static void ShowWindow() {
@@ -86,7 +68,8 @@ public class LevelEditorWindow : EditorWindow {
 
   private void DrawActions() {
     EditorGUILayout.BeginHorizontal();
-    GUILayout.Button("Save Level");
+    if (GUILayout.Button("Save Level"))
+      this.SaveLevel();
     GUILayout.Button("Load Level");
     EditorGUILayout.EndHorizontal();
   }
@@ -95,29 +78,29 @@ public class LevelEditorWindow : EditorWindow {
     EditorGUILayout.BeginVertical();
     EditorGUILayout.LabelField("Palette");
     this.DrawPaletteItem(null);
-    this.DrawPaletteItem(PaletteItem.Wall0Edge0);
-    this.DrawPaletteItem(PaletteItem.Wall1Edge0);
-    this.DrawPaletteItem(PaletteItem.Wall1Edge1);
-    this.DrawPaletteItem(PaletteItem.Wall1Edge2);
-    this.DrawPaletteItem(PaletteItem.Wall1Edge3);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge0);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge1);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge2);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge3);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge4);
-    this.DrawPaletteItem(PaletteItem.Wall2Edge5);
-    this.DrawPaletteItem(PaletteItem.Wall3Edge0);
-    this.DrawPaletteItem(PaletteItem.Wall3Edge1);
-    this.DrawPaletteItem(PaletteItem.Wall3Edge2);
-    this.DrawPaletteItem(PaletteItem.Wall3Edge3);
-    this.DrawPaletteItem(PaletteItem.Wall4Edge0);
-    this.DrawPaletteItem(PaletteItem.Player0);
-    this.DrawPaletteItem(PaletteItem.Player1);
-    this.DrawPaletteItem(PaletteItem.Goal);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall0Edge0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall1Edge0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall1Edge1);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall1Edge2);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall1Edge3);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge1);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge2);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge3);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge4);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall2Edge5);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall3Edge0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall3Edge1);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall3Edge2);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall3Edge3);
+    this.DrawPaletteItem(LevelModels.GridItemType.Wall4Edge0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Player0);
+    this.DrawPaletteItem(LevelModels.GridItemType.Player1);
+    this.DrawPaletteItem(LevelModels.GridItemType.Goal);
     EditorGUILayout.EndVertical();
   }
 
-  private void DrawPaletteItem(PaletteItem? item) {
+  private void DrawPaletteItem(LevelModels.GridItemType? item) {
     if (item.HasValue) {
       if (GUILayout.Button(PaletteItemTexture(item.Value), new [] { GUILayout.Width(100) }))
         this.currentPaletteItem = item.Value;
@@ -158,7 +141,37 @@ public class LevelEditorWindow : EditorWindow {
       this.levelGrid.SetItem(x, y, this.currentPaletteItem);
   }
 
-  private static Texture PaletteItemTexture(PaletteItem item) {
+  private static Texture PaletteItemTexture(LevelModels.GridItemType item) {
     return (Texture) EditorGUIUtility.Load($"Assets/Textures/Editor/{item.ToString()}.png");
+  }
+
+  private void SaveLevel() {
+    var path = EditorUtility.SaveFilePanel("Save Level", string.Empty, "Level", ".xml.level");
+
+    if (path.Length > 0) {
+      using (var fileStream = File.OpenWrite(path)) {
+        var levelModel = this.MakeLevelModel();
+        var serialiser = new XmlSerializer(typeof(LevelModels.Level));
+        serialiser.Serialize(fileStream, levelModel);
+      }
+    } else {
+      EditorUtility.DisplayDialog("No File Selected", "A file must be selected to save", "OK");
+    }
+  }
+
+  private LevelModels.Level MakeLevelModel() {
+    return new LevelModels.Level() {
+      Width = this.gridSize.Width,
+      Height = this.gridSize.Height,
+      Grid = new LevelModels.Grid() {
+        GridItems = this.levelGrid.ToFlatGrid()
+          .Select(item => {
+            return item.HasValue
+              ? new LevelModels.GridItem() { Type = item.Value }
+              : (LevelModels.AbstractGridItem) new LevelModels.EmptyItem();
+          })
+          .ToArray()
+      }
+    };
   }
 }
