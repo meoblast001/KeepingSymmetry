@@ -5,6 +5,7 @@ public static class LevelModels {
   public class Level {
     public int Width { get; set; }
     public int Height { get; set; }
+    public SymmetryAxis SymmetryAxis { get; set; }
     public Grid Grid { get; set; }
   }
 
@@ -27,6 +28,11 @@ public static class LevelModels {
 
   public class EmptyItem : AbstractGridItem {
     // Intentionally empty.
+  }
+
+  public enum SymmetryAxis {
+    AxisX,
+    AxisY
   }
 
   public enum GridItemType {

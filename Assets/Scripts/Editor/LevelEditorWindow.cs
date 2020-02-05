@@ -16,14 +16,9 @@ public class LevelEditorWindow : EditorWindow {
     public int Height { get; set; }
   }
 
-  public enum SymmetryAxis {
-    AxisX,
-    AxisY
-  }
-
   private Vector2 scrollPosition = Vector2.zero;
   private GridSize gridSize = new GridSize() { Width = StartWidth, Height = StartHeight };
-  private SymmetryAxis symmetryAxis = SymmetryAxis.AxisX;
+  private LevelModels.SymmetryAxis symmetryAxis = LevelModels.SymmetryAxis.AxisX;
   private LevelModels.GridItemType? currentPaletteItem;
   private LevelEditorGrid<LevelModels.GridItemType> levelGrid
     = new LevelEditorGrid<LevelModels.GridItemType>(StartWidth, StartHeight);
@@ -50,10 +45,10 @@ public class LevelEditorWindow : EditorWindow {
 
     EditorGUILayout.BeginHorizontal(new [] { GUILayout.MaxWidth(300) });
     EditorGUILayout.LabelField("Axis of Symmetry");
-    if (GUILayout.Toggle(this.symmetryAxis == SymmetryAxis.AxisX, "X Axis"))
-      this.symmetryAxis = SymmetryAxis.AxisX;
-    if (GUILayout.Toggle(this.symmetryAxis == SymmetryAxis.AxisY, "Y Axis"))
-      this.symmetryAxis = SymmetryAxis.AxisY;
+    if (GUILayout.Toggle(this.symmetryAxis == LevelModels.SymmetryAxis.AxisX, "X Axis"))
+      this.symmetryAxis = LevelModels.SymmetryAxis.AxisX;
+    if (GUILayout.Toggle(this.symmetryAxis == LevelModels.SymmetryAxis.AxisY, "Y Axis"))
+      this.symmetryAxis = LevelModels.SymmetryAxis.AxisY;
     EditorGUILayout.EndHorizontal();
 
     GUILayout.Space(SectionSpace);
@@ -115,12 +110,12 @@ public class LevelEditorWindow : EditorWindow {
   private void DrawGrid() {
     EditorGUILayout.BeginVertical();
     for (int y = 0; y < this.gridSize.Height; ++y) {
-      if (this.symmetryAxis == SymmetryAxis.AxisY && this.gridSize.Height / 2 == y)
+      if (this.symmetryAxis == LevelModels.SymmetryAxis.AxisY && this.gridSize.Height / 2 == y)
         GUILayout.Space(SymmetryLineSpace);
 
       EditorGUILayout.BeginHorizontal();
       for (int x = 0; x < this.gridSize.Width; ++x) {
-        if (this.symmetryAxis == SymmetryAxis.AxisX && this.gridSize.Width / 2 == x)
+        if (this.symmetryAxis == LevelModels.SymmetryAxis.AxisX && this.gridSize.Width / 2 == x)
           GUILayout.Space(SymmetryLineSpace);
 
         this.DrawGridButton(x, y);
@@ -184,6 +179,7 @@ public class LevelEditorWindow : EditorWindow {
     return new LevelModels.Level() {
       Width = this.gridSize.Width,
       Height = this.gridSize.Height,
+      SymmetryAxis = this.symmetryAxis,
       Grid = new LevelModels.Grid() {
         GridItems = this.levelGrid.ToFlatGrid()
           .Select(item => {
@@ -199,6 +195,7 @@ public class LevelEditorWindow : EditorWindow {
   private void OpenLevelModel(LevelModels.Level level) {
     this.gridSize.Width = level.Width;
     this.gridSize.Height = level.Height;
+    this.symmetryAxis = level.SymmetryAxis;
     var gridItems = level.Grid.GridItems
       .Select(item => {
         if (item is LevelModels.GridItem) {
