@@ -37,6 +37,16 @@ public class LevelEditorGrid<Item>
     return grid.SelectMany(row => row).ToList();
   }
 
+  public static LevelEditorGrid<Item> FromFlatGrid(Item?[] flatGrid, int width, int height) {
+    var grid = new LevelEditorGrid<Item>(width, height);
+    for (var y = 0; y < height; ++y) {
+      for (var x = 0; x < width; ++x) {
+        grid.grid[y][x] = flatGrid[y * width + x];
+      }
+    }
+    return grid;
+  }
+
   private static Item? TryGetInGrid(List<List<Item?>> grid, int x, int y) {
     return (grid != null && y < grid.Count && x < grid[y].Count) ? grid[y][x] : null;
   }

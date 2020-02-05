@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
 using UnityEditor;
@@ -70,7 +71,8 @@ public class LevelEditorWindow : EditorWindow {
     EditorGUILayout.BeginHorizontal();
     if (GUILayout.Button("Save Level"))
       this.SaveLevel();
-    GUILayout.Button("Load Level");
+    if (GUILayout.Button("Load Level"))
+      this.LoadLevel();
     EditorGUILayout.EndHorizontal();
   }
 
@@ -146,7 +148,7 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   private void SaveLevel() {
-    var path = EditorUtility.SaveFilePanel("Save Level", string.Empty, "Level", ".xml.level");
+    var path = EditorUtility.SaveFilePanel("Save Level", string.Empty, "Level", "xml.level");
 
     if (path.Length > 0) {
       using (var fileStream = File.OpenWrite(path)) {
@@ -156,6 +158,25 @@ public class LevelEditorWindow : EditorWindow {
       }
     } else {
       EditorUtility.DisplayDialog("No File Selected", "A file must be selected to save", "OK");
+    }
+  }
+
+  private void LoadLevel() {
+    var path = EditorUtility.OpenFilePanel("Load Level", string.Empty, "xml.level");
+
+    if (path.Length > 0) {
+      using (var fileStream = File.OpenRead(path)) {
+        try {
+          var serializer = new XmlSerializer(typeof(LevelModels.Level));
+          var levelModel = (LevelModels.Level) serializer.Deserialize(fileStream);
+          this.OpenLevelModel(levelModel);
+        } catch (InvalidOperationException e) {
+          Debug.LogError($"Deserialisation error while opening level: {e.Message}");
+          EditorUtility.DisplayDialog("Deserialisation Error", "An error occurred while opening level", "OK");
+        }
+      }
+    } else {
+      EditorUtility.DisplayDialog("No File Selected", "A file must be selected to load", "OK");
     }
   }
 
@@ -173,5 +194,21 @@ public class LevelEditorWindow : EditorWindow {
           .ToArray()
       }
     };
+  }
+
+  private void OpenLevelModel(LevelModels.Level level) {
+    this.gridSize.Width = level.Width;
+    this.gridSize.Height = level.Height;
+    var gridItems = level.Grid.GridItems
+      .Select(item => {
+        if (item is LevelModels.GridItem) {
+          var gridItem = (LevelModels.GridItem) item;
+          return (LevelModels.GridItemType?) gridItem.Type;
+        } else {
+          return null;
+        }
+      })
+      .ToArray();
+    this.levelGrid = LevelEditorGrid<LevelModels.GridItemType>.FromFlatGrid(gridItems, level.Width, level.Height);
   }
 }
