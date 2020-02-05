@@ -1,5 +1,8 @@
 ﻿using System.Xml.Serialization;
 
+/// <summary>
+/// Serialisable models of levels. Designed to be loaded from / saved to XML.
+/// </summary>
 public static class LevelModels {
   [XmlRootAttribute("Level")]
   public class Level {

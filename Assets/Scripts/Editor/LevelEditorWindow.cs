@@ -5,6 +5,9 @@ using System.Xml.Serialization;
 using UnityEditor;
 using UnityEngine;
 
+/// <summary>
+/// Editor window to edit level XML files.
+/// </summary>
 public class LevelEditorWindow : EditorWindow {
   const int StartWidth = 10;
   const int StartHeight= 10;
