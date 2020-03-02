@@ -17,10 +17,14 @@ public class PlayerMovementController : MonoBehaviour {
   public ActivePlayer activePlayer = ActivePlayer.Player1;
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
+  // TODO: Two players.
+  [SerializeField] private SceneGridActor player1;
+
   public void OnMove(InputValue value) {
     var inputVec = value.Get<Vector2>();
     var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
     Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
+    this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
   }
 
   public void OnToggleActive(InputValue value) {
