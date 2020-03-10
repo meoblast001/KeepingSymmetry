@@ -191,10 +191,10 @@ public class SceneGrid : ITickable {
         ++point.x;
         break;
       case MovementDirection.Backward:
-        --point.x;
+        --point.y;
         break;
       case MovementDirection.Left:
-        --point.y;
+        --point.x;
         break;
       default:
         return null;
