@@ -17,14 +17,38 @@ public class PlayerMovementController : MonoBehaviour {
   public ActivePlayer activePlayer = ActivePlayer.Player1;
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
+  [SerializeField] private SceneGridActor player1;
+  [SerializeField] private SceneGridActor player2;
+  [SerializeField] private SymmetryAxis symmetryAxis;
+
+  private ActivePlayerIndicator player1ActiveIndicator;
+  private ActivePlayerIndicator player2ActiveIndicator;
+
+  public void Start() {
+    this.player1ActiveIndicator = player1.GetComponent<ActivePlayerIndicator>();
+    this.player2ActiveIndicator = player2.GetComponent<ActivePlayerIndicator>();
+    this.SetActivePlayerIndicator(this.activePlayer);
+  }
+
   public void OnMove(InputValue value) {
     var inputVec = value.Get<Vector2>();
     var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
     Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
+    switch (this.activePlayer) {
+      case ActivePlayer.Player1:
+        this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
+        this.player2.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+        break;
+      case ActivePlayer.Player2:
+        this.player1.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+        this.player2.MoveAdjacentUnsynced(rotatedMovementDirection);
+        break;
+    }
   }
 
   public void OnToggleActive(InputValue value) {
     this.activePlayer = activePlayer == ActivePlayer.Player1 ? ActivePlayer.Player2 : ActivePlayer.Player1;
+    this.SetActivePlayerIndicator(this.activePlayer);
     Debug.Log("Active Player is " + this.activePlayer);
   }
 
@@ -119,5 +143,67 @@ public class PlayerMovementController : MonoBehaviour {
     }
     Debug.Log("Invalid movement direciton: " + direction);
     return MovementDirection.None;
+  }
+
+  private MovementDirection SymmetricalMovement(MovementDirection direction) {
+    switch (this.symmetryAxis) {
+      case SymmetryAxis.AxisX:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Forward;
+          case MovementDirection.Right:
+            return MovementDirection.Left;
+          case MovementDirection.Backward:
+            return MovementDirection.Backward;
+          case MovementDirection.Left:
+            return MovementDirection.Right;
+        }
+        break;
+      case SymmetryAxis.AxisZ:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Backward;
+          case MovementDirection.Right:
+            return MovementDirection.Right;
+          case MovementDirection.Backward:
+            return MovementDirection.Forward;
+          case MovementDirection.Left:
+            return MovementDirection.Left;
+        }
+        break;
+      case SymmetryAxis.AxisXZ:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Backward;
+          case MovementDirection.Right:
+            return MovementDirection.Left;
+          case MovementDirection.Backward:
+            return MovementDirection.Forward;
+          case MovementDirection.Left:
+            return MovementDirection.Right;
+        }
+        break;
+    }
+
+    Debug.LogWarning("Unknown inversion of movement direction: " + direction);
+    return MovementDirection.None;
+  }
+
+  private void SetActivePlayerIndicator(ActivePlayer activePlayer) {
+    if (this.player1ActiveIndicator == null || this.player2ActiveIndicator == null) {
+      Debug.LogWarning("Active player indicator missing");
+      return;
+    }
+
+    switch (activePlayer) {
+      case ActivePlayer.Player1:
+        this.player1ActiveIndicator.SetActive(true);
+        this.player2ActiveIndicator.SetActive(false);
+        break;
+      case ActivePlayer.Player2:
+        this.player1ActiveIndicator.SetActive(false);
+        this.player2ActiveIndicator.SetActive(true);
+        break;
+    }
   }
 }

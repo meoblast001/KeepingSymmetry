@@ -46,3 +46,6 @@ Assets/StreamingAssets/crashlytics-build.properties
 
 # ProBuilder settings
 ProjectSettings/ProBuilderSettings.json
+
+# Zenject
+Assets/Plugins/Zenject/
