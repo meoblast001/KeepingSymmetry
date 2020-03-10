@@ -17,14 +17,24 @@ public class PlayerMovementController : MonoBehaviour {
   public ActivePlayer activePlayer = ActivePlayer.Player1;
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
-  // TODO: Two players.
   [SerializeField] private SceneGridActor player1;
+  [SerializeField] private SceneGridActor player2;
+  [SerializeField] private SymmetryAxis symmetryAxis;
 
   public void OnMove(InputValue value) {
     var inputVec = value.Get<Vector2>();
     var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
     Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
-    this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
+    switch (this.activePlayer) {
+      case ActivePlayer.Player1:
+        this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
+        this.player2.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+        break;
+      case ActivePlayer.Player2:
+        this.player1.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+        this.player2.MoveAdjacentUnsynced(rotatedMovementDirection);
+        break;
+    }
   }
 
   public void OnToggleActive(InputValue value) {
@@ -122,6 +132,50 @@ public class PlayerMovementController : MonoBehaviour {
         return MovementDirection.None;
     }
     Debug.Log("Invalid movement direciton: " + direction);
+    return MovementDirection.None;
+  }
+
+  private MovementDirection SymmetricalMovement(MovementDirection direction) {
+    switch (this.symmetryAxis) {
+      case SymmetryAxis.AxisX:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Forward;
+          case MovementDirection.Right:
+            return MovementDirection.Left;
+          case MovementDirection.Backward:
+            return MovementDirection.Backward;
+          case MovementDirection.Left:
+            return MovementDirection.Right;
+        }
+        break;
+      case SymmetryAxis.AxisZ:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Backward;
+          case MovementDirection.Right:
+            return MovementDirection.Right;
+          case MovementDirection.Backward:
+            return MovementDirection.Forward;
+          case MovementDirection.Left:
+            return MovementDirection.Left;
+        }
+        break;
+      case SymmetryAxis.AxisXZ:
+        switch (direction) {
+          case MovementDirection.Forward:
+            return MovementDirection.Backward;
+          case MovementDirection.Right:
+            return MovementDirection.Left;
+          case MovementDirection.Backward:
+            return MovementDirection.Forward;
+          case MovementDirection.Left:
+            return MovementDirection.Right;
+        }
+        break;
+    }
+
+    Debug.LogWarning("Unknown inversion of movement direction: " + direction);
     return MovementDirection.None;
   }
 }
