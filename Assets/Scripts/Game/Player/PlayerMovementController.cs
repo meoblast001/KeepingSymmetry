@@ -19,10 +19,15 @@ public class PlayerMovementController : MonoBehaviour {
 
   [SerializeField] private SceneGridActor player1;
   [SerializeField] private SceneGridActor player2;
-  [SerializeField] private SymmetryAxis symmetryAxis;
+  [SerializeField] private LevelModels.SymmetryAxis symmetryAxis;
 
   private ActivePlayerIndicator player1ActiveIndicator;
   private ActivePlayerIndicator player2ActiveIndicator;
+
+  public LevelModels.SymmetryAxis SymmetryAxis {
+    get { return this.symmetryAxis; }
+    set { this.symmetryAxis = value; }
+  }
 
   public void Start() {
     this.player1ActiveIndicator = player1.GetComponent<ActivePlayerIndicator>();
@@ -147,7 +152,7 @@ public class PlayerMovementController : MonoBehaviour {
 
   private MovementDirection SymmetricalMovement(MovementDirection direction) {
     switch (this.symmetryAxis) {
-      case SymmetryAxis.AxisX:
+      case LevelModels.SymmetryAxis.AxisX:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Forward;
@@ -159,7 +164,7 @@ public class PlayerMovementController : MonoBehaviour {
             return MovementDirection.Right;
         }
         break;
-      case SymmetryAxis.AxisZ:
+      case LevelModels.SymmetryAxis.AxisY:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Backward;
@@ -171,7 +176,7 @@ public class PlayerMovementController : MonoBehaviour {
             return MovementDirection.Left;
         }
         break;
-      case SymmetryAxis.AxisXZ:
+      case LevelModels.SymmetryAxis.AxisXY:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Backward;
