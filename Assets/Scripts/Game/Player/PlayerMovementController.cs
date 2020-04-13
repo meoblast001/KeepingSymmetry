@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 public class PlayerMovementController : MonoBehaviour {
   public enum ActivePlayer {
@@ -17,17 +18,13 @@ public class PlayerMovementController : MonoBehaviour {
   public ActivePlayer activePlayer = ActivePlayer.Player1;
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
-  [SerializeField] private SceneGridActor player1;
-  [SerializeField] private SceneGridActor player2;
-  [SerializeField] private LevelModels.SymmetryAxis symmetryAxis;
+  [Inject(Id = PlayerType.Player1)] private SceneGridActor player1;
+  [Inject(Id = PlayerType.Player2)] private SceneGridActor player2;
 
   private ActivePlayerIndicator player1ActiveIndicator;
   private ActivePlayerIndicator player2ActiveIndicator;
 
-  public LevelModels.SymmetryAxis SymmetryAxis {
-    get { return this.symmetryAxis; }
-    set { this.symmetryAxis = value; }
-  }
+  public LevelModels.SymmetryAxis SymmetryAxis { get; set; }
 
   public void Start() {
     this.player1ActiveIndicator = player1.GetComponent<ActivePlayerIndicator>();
@@ -151,7 +148,7 @@ public class PlayerMovementController : MonoBehaviour {
   }
 
   private MovementDirection SymmetricalMovement(MovementDirection direction) {
-    switch (this.symmetryAxis) {
+    switch (this.SymmetryAxis) {
       case LevelModels.SymmetryAxis.AxisX:
         switch (direction) {
           case MovementDirection.Forward:

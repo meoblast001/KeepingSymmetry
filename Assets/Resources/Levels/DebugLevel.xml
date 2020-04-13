@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<Level xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <Width>10</Width>
+  <Height>10</Height>
+  <SymmetryAxis>AxisX</SymmetryAxis>
+  <Grid>
+    <GridItems>
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall1Edge3" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Item Type="Player0" />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Item Type="Player1" />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall3Edge0" />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall3Edge0" />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Empty />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Item Type="Goal" />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall1Edge2" />
+      <Empty />
+      <Item Type="Goal" />
+      <Empty />
+      <Item Type="Wall1Edge0" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall0Edge0" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall1Edge1" />
+      <Item Type="Wall0Edge0" />
+    </GridItems>
+  </Grid>
+</Level>

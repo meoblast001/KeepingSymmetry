@@ -1,0 +1,34 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b748c2105e97d29ff848553f4f0c2c29, type: 3}
+  m_Name: LevelPaletteSet
+  m_EditorClassIdentifier: 
+  levelPalettes:
+  - id: standard
+    levelPalette:
+      wall0Edge0: {fileID: 0}
+      wall1Edge0: {fileID: 0}
+      wall1Edge1: {fileID: 0}
+      wall1Edge2: {fileID: 0}
+      wall1Edge3: {fileID: 0}
+      wall2Edge0: {fileID: 0}
+      wall2Edge1: {fileID: 0}
+      wall2Edge2: {fileID: 0}
+      wall2Edge3: {fileID: 0}
+      wall2Edge4: {fileID: 0}
+      wall2Edge5: {fileID: 0}
+      wall3Edge0: {fileID: 0}
+      wall3Edge1: {fileID: 0}
+      wall3Edge2: {fileID: 0}
+      wall3Edge3: {fileID: 0}
+      wall4Edge0: {fileID: 0}
+      goal: {fileID: 0}
