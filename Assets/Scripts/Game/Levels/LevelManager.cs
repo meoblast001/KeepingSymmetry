@@ -36,6 +36,7 @@ public class LevelManager {
       $"Level has symmetry axis = {levelModel.SymmetryAxis} with dimensions = "
       + $"({levelModel.Width}, {levelModel.Height})");
     this.playerMovementController.SymmetryAxis = levelModel.SymmetryAxis;
+    // Starts at top-left of level while grid starts at bottom-left.
     for (int y = 0; y < levelModel.Height; ++y) {
       for (int x = 0; x < levelModel.Width; ++x) {
         if (levelModel.Grid.GridItems.Length <= y * levelModel.Width + x) {
@@ -62,7 +63,8 @@ public class LevelManager {
           }
 
           if (sceneGridActor != null) {
-            sceneGridActor.SetGridPoint(new Point() { x = x, y = y });
+            // Y must be inverted because level base is top-left and grid base is bottom-left.
+            sceneGridActor.SetGridPoint(new Point() { x = x, y = levelModel.Height - y });
           }
         }
       }
