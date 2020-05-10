@@ -6,6 +6,7 @@ using UnityEngine;
 using Zenject;
 
 public class LevelManager {
+  [Inject] private DiContainer container;
   [Inject] private PlayerMovementController playerMovementController;
   [Inject] private LevelPaletteSet levelPaletteSet;
 
@@ -28,6 +29,9 @@ public class LevelManager {
       return;
     }
 
+    Debug.Log(
+      $"Level has symmetry axis = {levelModel.SymmetryAxis} with dimensions = "
+      + $"({levelModel.Width}, {levelModel.Height})");
     this.playerMovementController.SymmetryAxis = levelModel.SymmetryAxis;
     for (int y = 0; y < levelModel.Height; ++y) {
       for (int x = 0; x < levelModel.Width; ++x) {
@@ -39,14 +43,14 @@ public class LevelManager {
         if (gridItem != null) {
           var objectPrefab = SelectPrefab(levelPalette.Value, gridItem.Type);
           if (objectPrefab != null) {
-            var gameObject = GameObject.Instantiate(objectPrefab);
+            var gameObject = this.container.InstantiatePrefab(objectPrefab);
             var sceneGridActor = gameObject.GetComponent<SceneGridActor>();
             if (sceneGridActor != null) {
               sceneGridActor.SetGridPoint(new Point() { x = x, y = y });
               this.activeObjects.Add(gameObject);
             } else {
               Debug.LogError($"Game object instantiated for grid type {gridItem.Type.ToString()} does not contain "
-                + "SceneGridActory component");
+                + "SceneGridActor component");
               GameObject.Destroy(gameObject);
             }
           }
