@@ -15,20 +15,37 @@ MonoBehaviour:
   levelPalettes:
   - id: standard
     levelPalette:
-      wall0Edge0: {fileID: 0}
-      wall1Edge0: {fileID: 0}
-      wall1Edge1: {fileID: 0}
-      wall1Edge2: {fileID: 0}
-      wall1Edge3: {fileID: 0}
-      wall2Edge0: {fileID: 0}
-      wall2Edge1: {fileID: 0}
-      wall2Edge2: {fileID: 0}
-      wall2Edge3: {fileID: 0}
-      wall2Edge4: {fileID: 0}
-      wall2Edge5: {fileID: 0}
-      wall3Edge0: {fileID: 0}
-      wall3Edge1: {fileID: 0}
-      wall3Edge2: {fileID: 0}
-      wall3Edge3: {fileID: 0}
-      wall4Edge0: {fileID: 0}
-      goal: {fileID: 0}
+      wall0Edge0: {fileID: 7033910139902982996, guid: a6640d949df8bbba4af0a0e66c66b280,
+        type: 3}
+      wall1Edge0: {fileID: 5815363982845572130, guid: e8781cfb2836e7e8f8a61706969ce105,
+        type: 3}
+      wall1Edge1: {fileID: 1626596797405316054, guid: f391fcf4db840ed9a9fbf05ff64f8cbf,
+        type: 3}
+      wall1Edge2: {fileID: 5839665182852345225, guid: c14c3fd23c0d53a708d0138947b444f6,
+        type: 3}
+      wall1Edge3: {fileID: 287524613810937640, guid: 7c8ba05952e9566a3835a685435523ef,
+        type: 3}
+      wall2Edge0: {fileID: 8433148413151106000, guid: 9d5576734e414eb328156362caf03cd5,
+        type: 3}
+      wall2Edge1: {fileID: 377752904073786251, guid: 7b8e46c3056d61bd5a50c0c7bfc7a59d,
+        type: 3}
+      wall2Edge2: {fileID: 962211259208739093, guid: 539ff5df2bdd494cb847a91851fee9e1,
+        type: 3}
+      wall2Edge3: {fileID: 1341692829769799747, guid: e8bcd4be2c6c67452b6a71331c02c38a,
+        type: 3}
+      wall2Edge4: {fileID: 8483985964223835356, guid: 33daa4c1696a96739a5dd70cb0ff98a6,
+        type: 3}
+      wall2Edge5: {fileID: 1746044528685633690, guid: c45552727bc4a314aac19e5348b2474d,
+        type: 3}
+      wall3Edge0: {fileID: 928439199262289161, guid: cf2ed25547e85f62b8b4c31ce77a7404,
+        type: 3}
+      wall3Edge1: {fileID: 7524617939211735869, guid: 784dceb22d5a6cbc092269f85affa5a5,
+        type: 3}
+      wall3Edge2: {fileID: 1132882166819873715, guid: b9882caface21d8ef8feada67fbb74e1,
+        type: 3}
+      wall3Edge3: {fileID: 2998158140186627915, guid: 5edc91bb34bd8a308a099c604a443a6d,
+        type: 3}
+      wall4Edge0: {fileID: 7551172008643977088, guid: 9cd3fcee52c5665f3a99325eba6b73fc,
+        type: 3}
+      goal: {fileID: 7275480198214321675, guid: 14ef07938482b3858a162ae5e3f8a0a0,
+        type: 3}
