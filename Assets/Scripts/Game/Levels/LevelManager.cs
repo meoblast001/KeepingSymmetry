@@ -10,6 +10,9 @@ public class LevelManager {
   [Inject] private PlayerMovementController playerMovementController;
   [Inject] private LevelPaletteSet levelPaletteSet;
 
+  [Inject(Id = PlayerType.Player1)] private SceneGridActor player1;
+  [Inject(Id = PlayerType.Player2)] private SceneGridActor player2;
+
   private List<GameObject> activeObjects = new List<GameObject>();
 
   public void Load(string levelResourceFile) {
@@ -42,17 +45,24 @@ public class LevelManager {
         var gridItem = levelModel.Grid.GridItems[y * levelModel.Width + x] as LevelModels.GridItem;
         if (gridItem != null) {
           var objectPrefab = SelectPrefab(levelPalette.Value, gridItem.Type);
+          SceneGridActor sceneGridActor = null;
+
           if (objectPrefab != null) {
             var gameObject = this.container.InstantiatePrefab(objectPrefab);
-            var sceneGridActor = gameObject.GetComponent<SceneGridActor>();
+            sceneGridActor = gameObject.GetComponent<SceneGridActor>();
             if (sceneGridActor != null) {
-              sceneGridActor.SetGridPoint(new Point() { x = x, y = y });
               this.activeObjects.Add(gameObject);
             } else {
               Debug.LogError($"Game object instantiated for grid type {gridItem.Type.ToString()} does not contain "
                 + "SceneGridActor component");
               GameObject.Destroy(gameObject);
             }
+          } else {
+            sceneGridActor = GetSceneGridActorForSingleton(gridItem.Type);
+          }
+
+          if (sceneGridActor != null) {
+            sceneGridActor.SetGridPoint(new Point() { x = x, y = y });
           }
         }
       }
@@ -116,6 +126,17 @@ public class LevelManager {
         return levelPalette.goal;
       default:
         Debug.LogError($"Cannot select prefab for grid item type {type.ToString()}");
+        return null;
+    }
+  }
+
+  private SceneGridActor GetSceneGridActorForSingleton(LevelModels.GridItemType type) {
+    switch (type) {
+      case LevelModels.GridItemType.Player0:
+        return this.player1.GetComponent<SceneGridActor>();
+      case LevelModels.GridItemType.Player1:
+        return this.player2.GetComponent<SceneGridActor>();
+      default:
         return null;
     }
   }
