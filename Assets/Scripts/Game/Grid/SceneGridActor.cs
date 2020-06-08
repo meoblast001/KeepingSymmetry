@@ -28,7 +28,7 @@ public class SceneGridActor : MonoBehaviour, SceneGrid.IMoveCallback {
   public void SetGridPoint(Point point) {
     this.currentPoint = point;
     if (this.enabled) {
-      this.transform.position = this.sceneGrid.SetActorPoint(this.uniqueId, this.currentPoint);
+      this.ApplyPosition(this.sceneGrid.SetActorPoint(this.uniqueId, this.currentPoint));
     }
   }
 
@@ -41,10 +41,14 @@ public class SceneGridActor : MonoBehaviour, SceneGrid.IMoveCallback {
   }
 
   public void OnMoveUpdated(Vector3 position) {
-    this.transform.position = position;
+    this.ApplyPosition(position);
   }
 
   public void OnMoveCompleted(Point occupiedPoint) {
     this.currentPoint = occupiedPoint;
+  }
+
+  private void ApplyPosition(Vector3 sceneGridPos) {
+    this.transform.position = new Vector3(sceneGridPos.x, sceneGridPos.y, sceneGridPos.z);
   }
 }

@@ -16,6 +16,36 @@ public class SceneGrid : ITickable {
     void OnMoveCompleted(Point occupiedPoint);
   }
 
+  /// <summary>
+  /// Records and queries what actors are at what grid points.
+  /// </summary>
+  private class OccupiedPoints {
+    private Dictionary<object, Point> actorsToPoints = new Dictionary<object, Point>();
+    private Dictionary<Point, object> pointsToActors = new Dictionary<Point, object>();
+
+    public void Set(object actorId, Point point) {
+      if (this.actorsToPoints.ContainsKey(actorId)) {
+        this.Remove(actorId);
+      }
+      this.actorsToPoints[actorId] = point;
+      this.pointsToActors[point] = actorId;
+    }
+
+    public void Remove(object actorId) {
+      if (this.actorsToPoints.ContainsKey(actorId)) {
+        Point point = this.actorsToPoints[actorId];
+        this.actorsToPoints.Remove(actorId);
+        this.pointsToActors.Remove(point);
+      } else {
+        Debug.LogError("Could not remove actor occupation from point.");
+      }
+    }
+
+    public Point? GetPointByActorId(object actorId) {
+      return this.actorsToPoints.ContainsKey(actorId) ? (Point?)this.actorsToPoints[actorId] : null;
+    }
+  }
+
   private abstract class AbstractMovement {
     public Point start;
     public Point end;
@@ -44,7 +74,7 @@ public class SceneGrid : ITickable {
     public SyncedMovement(Point start, Point end, IMoveCallback moveCallback) : base(start, end, moveCallback) {}
   }
 
-  private Dictionary<object, Point> occupiedPoints = new Dictionary<object, Point>();
+  private OccupiedPoints occupiedPoints = new OccupiedPoints();
   private Dictionary<object, UnsyncedMovement> unsyncedMovements = new Dictionary<object, UnsyncedMovement>();
   private Dictionary<object, SyncedMovement> syncedMovements = new Dictionary<object, SyncedMovement>();
   private Dictionary<object, SyncedMovement> queuedSyncedMovements = new Dictionary<object, SyncedMovement>();
@@ -113,7 +143,7 @@ public class SceneGrid : ITickable {
   /// Registers an actor and occupies a point in the grid.
   /// </summary>
   public Vector3 SetActorPoint(object actorId, Point newPoint) {
-    this.occupiedPoints[actorId] = newPoint;
+    this.occupiedPoints.Set(actorId, newPoint);
     return new Vector3(newPoint.x * GridElementSize, 0f, newPoint.y * GridElementSize);
   }
 
@@ -135,7 +165,7 @@ public class SceneGrid : ITickable {
     if (this.unsyncedMovements.ContainsKey(actorId))
       return false;
 
-    Point? oldPoint = this.occupiedPoints.ContainsKey(actorId) ? (Point?)this.occupiedPoints[actorId] : null;
+    Point? oldPoint = this.occupiedPoints.GetPointByActorId(actorId);
     if (!oldPoint.HasValue)
       return false;
     Point? newPoint = this.AdjacentMovementPoint(oldPoint.Value, direction);
@@ -157,7 +187,7 @@ public class SceneGrid : ITickable {
     if (this.queuedSyncedMovements.ContainsKey(actorId))
       return false;
 
-    Point? oldPoint = this.occupiedPoints.ContainsKey(actorId) ? (Point?)this.occupiedPoints[actorId] : null;
+    Point? oldPoint = this.occupiedPoints.GetPointByActorId(actorId);
     if (!oldPoint.HasValue)
       return false;
     Point? newPoint = this.AdjacentMovementPoint(oldPoint.Value, direction);
@@ -175,7 +205,7 @@ public class SceneGrid : ITickable {
   }
 
   private void OnMoveCompleted(object actorId, AbstractMovement movement) {
-    this.occupiedPoints[actorId] = movement.end;
+    this.SetActorPoint(actorId, movement.end);
     movement.moveCallback.OnMoveCompleted(movement.end);
   }
 
