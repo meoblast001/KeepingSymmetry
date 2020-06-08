@@ -44,6 +44,10 @@ public class SceneGrid : ITickable {
     public Point? GetPointByActorId(object actorId) {
       return this.actorsToPoints.ContainsKey(actorId) ? (Point?)this.actorsToPoints[actorId] : null;
     }
+
+    public bool IsPointOccupied(Point point) {
+      return this.pointsToActors.ContainsKey(point);
+    }
   }
 
   private abstract class AbstractMovement {
@@ -172,6 +176,9 @@ public class SceneGrid : ITickable {
     if (!newPoint.HasValue)
       return false;
 
+    if (this.occupiedPoints.IsPointOccupied(newPoint.Value))
+      return false;
+
     var movement = new UnsyncedMovement(oldPoint.Value, newPoint.Value, moveCallback);
     Debug.Log($"{nameof(SceneGrid)}: Adding unsynced movement for ID {actorId.ToString()}");
     this.unsyncedMovements.Add(actorId, movement);
@@ -192,6 +199,9 @@ public class SceneGrid : ITickable {
       return false;
     Point? newPoint = this.AdjacentMovementPoint(oldPoint.Value, direction);
     if (!newPoint.HasValue)
+      return false;
+
+    if (this.occupiedPoints.IsPointOccupied(newPoint.Value))
       return false;
 
     var movement = new SyncedMovement(oldPoint.Value, newPoint.Value, moveCallback);
