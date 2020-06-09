@@ -146,7 +146,7 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   private void SaveLevel() {
-    var path = EditorUtility.SaveFilePanel("Save Level", string.Empty, "Level", "xml.level");
+    var path = EditorUtility.SaveFilePanel("Save Level", string.Empty, "Level", "xml");
 
     if (path.Length > 0) {
       using (var fileStream = File.OpenWrite(path)) {
@@ -160,7 +160,7 @@ public class LevelEditorWindow : EditorWindow {
   }
 
   private void LoadLevel() {
-    var path = EditorUtility.OpenFilePanel("Load Level", string.Empty, "xml.level");
+    var path = EditorUtility.OpenFilePanel("Load Level", string.Empty, "xml");
 
     if (path.Length > 0) {
       using (var fileStream = File.OpenRead(path)) {

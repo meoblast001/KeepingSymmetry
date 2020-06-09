@@ -35,7 +35,8 @@ public static class LevelModels {
 
   public enum SymmetryAxis {
     AxisX,
-    AxisY
+    AxisY,
+    AxisXY
   }
 
   public enum GridItemType {

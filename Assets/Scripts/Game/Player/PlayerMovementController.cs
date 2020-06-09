@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.InputSystem;
+using Zenject;
 
 public class PlayerMovementController : MonoBehaviour {
   public enum ActivePlayer {
@@ -17,12 +18,13 @@ public class PlayerMovementController : MonoBehaviour {
   public ActivePlayer activePlayer = ActivePlayer.Player1;
   public CameraDirection cameraDirection = CameraDirection.ZForward;
 
-  [SerializeField] private SceneGridActor player1;
-  [SerializeField] private SceneGridActor player2;
-  [SerializeField] private SymmetryAxis symmetryAxis;
+  [Inject(Id = PlayerType.Player1)] private SceneGridActor player1;
+  [Inject(Id = PlayerType.Player2)] private SceneGridActor player2;
 
   private ActivePlayerIndicator player1ActiveIndicator;
   private ActivePlayerIndicator player2ActiveIndicator;
+
+  public LevelModels.SymmetryAxis SymmetryAxis { get; set; }
 
   public void Start() {
     this.player1ActiveIndicator = player1.GetComponent<ActivePlayerIndicator>();
@@ -35,14 +37,24 @@ public class PlayerMovementController : MonoBehaviour {
     var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
     Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
     switch (this.activePlayer) {
-      case ActivePlayer.Player1:
-        this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
-        this.player2.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+      case ActivePlayer.Player1: {
+        MovementDirection player1Dir = rotatedMovementDirection;
+        MovementDirection player2Dir = this.SymmetricalMovement(rotatedMovementDirection);
+        if (this.player1.CanMove(player1Dir) && this.player2.CanMove(player2Dir)) {
+          this.player1.MoveAdjacentUnsynced(player1Dir);
+          this.player2.MoveAdjacentUnsynced(player2Dir);
+        }
         break;
-      case ActivePlayer.Player2:
-        this.player1.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
-        this.player2.MoveAdjacentUnsynced(rotatedMovementDirection);
+      }
+      case ActivePlayer.Player2: {
+        MovementDirection player1Dir = this.SymmetricalMovement(rotatedMovementDirection);
+        MovementDirection player2Dir = rotatedMovementDirection;
+        if (this.player1.CanMove(player1Dir) && this.player2.CanMove(player2Dir)) {
+          this.player1.MoveAdjacentUnsynced(player1Dir);
+          this.player2.MoveAdjacentUnsynced(player2Dir);
+        }
         break;
+      }
     }
   }
 
@@ -146,8 +158,8 @@ public class PlayerMovementController : MonoBehaviour {
   }
 
   private MovementDirection SymmetricalMovement(MovementDirection direction) {
-    switch (this.symmetryAxis) {
-      case SymmetryAxis.AxisX:
+    switch (this.SymmetryAxis) {
+      case LevelModels.SymmetryAxis.AxisX:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Forward;
@@ -159,7 +171,7 @@ public class PlayerMovementController : MonoBehaviour {
             return MovementDirection.Right;
         }
         break;
-      case SymmetryAxis.AxisZ:
+      case LevelModels.SymmetryAxis.AxisY:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Backward;
@@ -171,7 +183,7 @@ public class PlayerMovementController : MonoBehaviour {
             return MovementDirection.Left;
         }
         break;
-      case SymmetryAxis.AxisXZ:
+      case LevelModels.SymmetryAxis.AxisXY:
         switch (direction) {
           case MovementDirection.Forward:
             return MovementDirection.Backward;
