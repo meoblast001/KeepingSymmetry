@@ -37,14 +37,24 @@ public class PlayerMovementController : MonoBehaviour {
     var rotatedMovementDirection = this.CameraRelativeMovement(DirectionFromInput(inputVec));
     Debug.Log("Move " + inputVec + " -> " + rotatedMovementDirection);
     switch (this.activePlayer) {
-      case ActivePlayer.Player1:
-        this.player1.MoveAdjacentUnsynced(rotatedMovementDirection);
-        this.player2.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
+      case ActivePlayer.Player1: {
+        MovementDirection player1Dir = rotatedMovementDirection;
+        MovementDirection player2Dir = this.SymmetricalMovement(rotatedMovementDirection);
+        if (this.player1.CanMove(player1Dir) && this.player2.CanMove(player2Dir)) {
+          this.player1.MoveAdjacentUnsynced(player1Dir);
+          this.player2.MoveAdjacentUnsynced(player2Dir);
+        }
         break;
-      case ActivePlayer.Player2:
-        this.player1.MoveAdjacentUnsynced(this.SymmetricalMovement(rotatedMovementDirection));
-        this.player2.MoveAdjacentUnsynced(rotatedMovementDirection);
+      }
+      case ActivePlayer.Player2: {
+        MovementDirection player1Dir = this.SymmetricalMovement(rotatedMovementDirection);
+        MovementDirection player2Dir = rotatedMovementDirection;
+        if (this.player1.CanMove(player1Dir) && this.player2.CanMove(player2Dir)) {
+          this.player1.MoveAdjacentUnsynced(player1Dir);
+          this.player2.MoveAdjacentUnsynced(player2Dir);
+        }
         break;
+      }
     }
   }
 

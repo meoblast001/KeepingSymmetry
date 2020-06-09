@@ -162,6 +162,20 @@ public class SceneGrid : ITickable {
   }
 
   /// <summary>
+  /// Returns whether an actor can move in a given direction.
+  /// </summary>
+  public bool CanMove(object actorId, MovementDirection direction) {
+    Point? oldPoint = this.occupiedPoints.GetPointByActorId(actorId);
+    if (!oldPoint.HasValue)
+      return false;
+    Point? newPoint = this.AdjacentMovementPoint(oldPoint.Value, direction);
+    if (!newPoint.HasValue)
+      return false;
+
+    return !this.occupiedPoints.IsPointOccupied(newPoint.Value);
+  }
+
+  /// <summary>
   /// Assigns a given actor to move to an adjacent point in some direction. Movement begins immediately. Callback is
   /// called with position and state information until the movement job completes.
   /// </summary>

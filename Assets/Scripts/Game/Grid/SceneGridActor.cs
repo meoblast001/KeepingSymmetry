@@ -32,6 +32,10 @@ public class SceneGridActor : MonoBehaviour, SceneGrid.IMoveCallback {
     }
   }
 
+  public bool CanMove(MovementDirection direction) {
+    return this.sceneGrid.CanMove(this.uniqueId, direction);
+  }
+
   public bool MoveAdjacentUnsynced(MovementDirection direction) {
     return this.sceneGrid.UnsyncedMoveAdjacent(this.uniqueId, direction, this);
   }
