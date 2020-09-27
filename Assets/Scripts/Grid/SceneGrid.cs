@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Zenject;
 
@@ -21,23 +22,42 @@ public class SceneGrid : ITickable {
   /// </summary>
   private class OccupiedPoints {
     private Dictionary<object, Point> actorsToPoints = new Dictionary<object, Point>();
-    private Dictionary<Point, object> pointsToActors = new Dictionary<Point, object>();
+    private Dictionary<Point, List<object>> pointsToActors = new Dictionary<Point, List<object>>();
+    private Dictionary<object, bool> solidObjects = new Dictionary<object, bool>();
 
     public void Set(object actorId, Point point) {
       if (this.actorsToPoints.ContainsKey(actorId)) {
         this.Remove(actorId);
       }
       this.actorsToPoints[actorId] = point;
-      this.pointsToActors[point] = actorId;
+      if (this.pointsToActors.ContainsKey(point)) {
+        this.pointsToActors[point].Add(actorId);
+      } else {
+        this.pointsToActors[point] = new List<object>() { actorId };
+      }
+    }
+
+    public void SetIsSolid(object actorId, bool solid) {
+      this.solidObjects[actorId] = solid;
     }
 
     public void Remove(object actorId) {
       if (this.actorsToPoints.ContainsKey(actorId)) {
         Point point = this.actorsToPoints[actorId];
         this.actorsToPoints.Remove(actorId);
-        this.pointsToActors.Remove(point);
+        var actors = this.pointsToActors[point];
+        actors.Remove(actorId);
+        if (actors.Count == 0) {
+          this.pointsToActors.Remove(point);
+        }
       } else {
         Debug.LogError("Could not remove actor occupation from point.");
+      }
+    }
+
+    public void UnsetIsSolid(object actorId) {
+      if (this.solidObjects.ContainsKey(actorId)) {
+        this.solidObjects.Remove(actorId);
       }
     }
 
@@ -46,7 +66,13 @@ public class SceneGrid : ITickable {
     }
 
     public bool IsPointOccupied(Point point) {
-      return this.pointsToActors.ContainsKey(point);
+      if (this.pointsToActors.ContainsKey(point)) {
+        var actorsAtPoint = this.pointsToActors[point];
+        if (actorsAtPoint.Any(actor => this.solidObjects.ContainsKey(actor) && this.solidObjects[actor])) {
+          return true;
+        }
+      }
+      return false;
     }
   }
 
@@ -141,6 +167,20 @@ public class SceneGrid : ITickable {
 
       movement.moveCallback.OnMoveUpdated(position);
     }
+  }
+
+  /// <summary>
+  /// Sets whether an object is solid or not.
+  /// </summary>
+  public void SetIsSolid(object actorId, bool solid) {
+    this.occupiedPoints.SetIsSolid(actorId, solid);
+  }
+
+  /// <summary>
+  /// Unsets whether an object is solid or not.
+  /// </summary>
+  public void UnsetIsSolid(object actorId) {
+    this.occupiedPoints.UnsetIsSolid(actorId);
   }
 
   /// <summary>
