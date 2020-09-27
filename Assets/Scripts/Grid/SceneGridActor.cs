@@ -9,6 +9,7 @@ public class SceneGridActor : MonoBehaviour, SceneGrid.IMoveCallback {
   [Inject] private SceneGrid sceneGrid = null;
 
   [SerializeField] private Point currentPoint;
+  [SerializeField] private bool isSolid;
 
   private object uniqueId;
 
@@ -17,12 +18,14 @@ public class SceneGridActor : MonoBehaviour, SceneGrid.IMoveCallback {
   }
 
   void OnEnable() {
+    this.sceneGrid.SetIsSolid(this.uniqueId, this.isSolid);
     this.transform.position
       = this.sceneGrid.SetActorPoint(this.uniqueId, this.currentPoint);
   }
 
   void OnDisable() {
     this.sceneGrid.UnsetActor(this.uniqueId);
+    this.sceneGrid.UnsetIsSolid(this.uniqueId);
   }
 
   public void SetGridPoint(Point point) {

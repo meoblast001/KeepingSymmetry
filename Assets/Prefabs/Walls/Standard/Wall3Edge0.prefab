@@ -47,6 +47,7 @@ MonoBehaviour:
   currentPoint:
     x: 0
     y: 0
+  isSolid: 1
 --- !u!1001 &1363510998105573677
 PrefabInstance:
   m_ObjectHideFlags: 0
